@@ -4,29 +4,33 @@ hideFilters();
 
 const showFilters = (event) => {
   hideFilters();
-  const id = `${event.target.attributes.id.value}-filters`;
-  document.getElementById(id).style.display = 'flex';
+  const id = `${event.target.dataset.id}-filters`;
+  document.getElementById(id).style.display = "flex";
 
-  document.querySelector('#column2 .header').innerHTML = `Select ${
+  document.querySelector("#column2 .header").innerHTML = `Select ${
     document.getElementById(id).dataset.name
   }`;
 };
 
-document.querySelectorAll('.parent-filter').forEach((item) => {
-  item.addEventListener('click', showFilters);
+document.querySelectorAll(".parent-filter").forEach((item) => {
+  item.addEventListener("click", showFilters);
 });
 
-const removeFilter = (filter) => {
-  selectedFilters.forEach((item, index, arr) => {
-    if (item === filter) {
-      arr.splice(index, 1);
+const removeFilter = (filterValue, filterName) => {
+  selectedFilters.forEach((item) => {
+    if (item.filters.includes(filterValue)) {
+      item.filters.splice(item.filters.indexOf(filterValue), 1);
+    }
+    if (item.filters.length <= 0) {
+      document.getElementById(filterName).remove();
+    } else {
+      document.getElementById(`selected-${filterValue}`).remove();
     }
   });
 
-  const checkbox = document.querySelectorAll(`input[value="${filter}"]`);
+  const checkbox = document.querySelectorAll(`input[value="${filterValue}"]`);
   checkbox.forEach((item) => (item.checked = false));
 
-  document.getElementById(`selected-${filter}`).remove();
   showSelectedFiltersCount();
 };
 
@@ -34,110 +38,74 @@ const selectFilter = (event) => {
   const filterName = event.target.name;
   const filterValue = event.target.value;
   if (event.target.checked) {
-    // create element
-    if (!selectedFilters.includes(filterValue)) {
-      let label = document.createElement('label');
-      label.setAttribute('id', `selected-${filterValue}`);
-      label.append(filterValue);
-      let button = document.createElement('button');
-      button.addEventListener('click', () => {
-        removeFilter(filterValue);
-      });
-      button.innerHTML = 'X';
-      document.getElementById('column3').appendChild(label);
-      label.appendChild(button);
-    }
-    selectedFilters.push(filterValue);
+    const find = selectedFilters.find((item) => item.name === filterName);
 
+    if (!find) {
+      selectedFilters.push({ name: filterName, filters: [filterValue] });
+    } else if (!find.filters.includes(filterValue)) {
+      selectedFilters.forEach((item) => {
+        if (item.name === filterName) {
+          item.filters.push(filterValue);
+        }
+      });
+    }
+
+    createElement();
     showSelectedFiltersCount();
   } else {
-    removeFilter(filterValue);
+    removeFilter(filterValue, filterName);
   }
 };
 
-document.querySelectorAll('input[type=checkbox]').forEach((item) => {
-  item.addEventListener('change', selectFilter);
+document.querySelectorAll("input[type=checkbox]").forEach((item) => {
+  item.addEventListener("change", selectFilter);
 });
 
 function hideFilters() {
-  document.querySelectorAll('.filters').forEach((item) => {
-    item.style.display = 'none';
+  document.querySelectorAll(".filters").forEach((item) => {
+    item.style.display = "none";
   });
 }
 
 function showSelectedFiltersCount() {
-  document.querySelector('#column3 .header').innerHTML =
-    selectedFilters.length > 0
-      ? `${selectedFilters.length} filters selected`
-      : 'No filters selected';
-}
-/*
-const config = [
-  {
-    id: 1,
-    name: 'Platform',
-    filters: [
-      {
-        name: 'Android',
-        value: 'android',
-      },
-      {
-        name: 'iOS',
-        value: 'ios',
-      },
-    ],
-  },
-  {
-    id: 2,
-    name: 'User Property',
-    filters: [
-      {
-        name: 'App Version',
-        filters: ['3.2.3', '3.2.4'],
-      },
-      {
-        name: 'Gender',
-        filters: ['Male', 'Female'],
-      },
-    ],
-  },
-];
+  let count = 0;
 
-const selectedFilters = [];
-
-const column1 = document.getElementById('column1');
-const column2 = document.getElementById('column2');
-const column3 = document.getElementById('column3');
-
-const addToFilter = (event) => {
-  if (event.target.checked) {
+  if (selectedFilters.length > 0) {
+    selectedFilters.forEach((item) => {
+      count = count + item.filters.length;
+    });
   }
-};
+  document.querySelector("#column3 .header").innerHTML =
+    count > 0 ? `${count} filters selected` : "No filters selected";
+}
 
-const getSubFilters = (event) => {
-  column2.innerHTML = '';
-  const id = event.target.attributes.data.value;
-  config.forEach((item) => {
-    if (item.id == id) {
-      item.filters.forEach((filter) => {
-        let label = document.createElement('label');
-        let checkbox = document.createElement('input');
-        checkbox.setAttribute('type', 'checkbox');
-        checkbox.setAttribute('value', filter.value);
-        checkbox.addEventListener('change', addToFilter);
-        column2.appendChild(label);
-        label.appendChild(checkbox);
-        label.append(filter.name);
-      });
+function createElement() {
+  selectedFilters.forEach((item) => {
+    let filterGroup = document.getElementById(item.name);
+
+    if (!filterGroup) {
+      filterGroup = document.createElement("div");
+      filterGroup.id = item.name;
+      filterGroup.append(item.name);
+      document.getElementById("column3").appendChild(filterGroup);
     }
+
+    item.filters.forEach((filter) => {
+      let label = document.getElementById(`selected-${filter}`);
+
+      if (!label) {
+        label = document.createElement("label");
+        label.setAttribute("id", `selected-${filter}`);
+        label.append(filter);
+
+        let button = document.createElement("button");
+        button.addEventListener("click", () => {
+          removeFilter(filter, item.name);
+        });
+        button.innerHTML = "X";
+        filterGroup.appendChild(label);
+        label.appendChild(button);
+      }
+    });
   });
-};
- 
-config.forEach((item) => {
-  let btn = document.createElement('button');
-  btn.innerHTML = item.name;
-  btn.setAttribute('data', `${item.id}`);
-  btn.addEventListener('click', getSubFilters);
-  column1.appendChild(btn);
-});
-*/
+}
