@@ -18,13 +18,16 @@ document.querySelectorAll(".parent-filter").forEach((item) => {
 
 const removeFilter = (filterValue, filterName) => {
   selectedFilters.forEach((item) => {
-    if (item.filters.includes(filterValue)) {
-      item.filters.splice(item.filters.indexOf(filterValue), 1);
-    }
-    if (item.filters.length <= 0) {
-      document.getElementById(filterName).remove();
-    } else {
-      document.getElementById(`selected-${filterValue}`).remove();
+    if (item.name === filterName) {
+      if (item.filters.includes(filterValue)) {
+        item.filters.splice(item.filters.indexOf(filterValue), 1);
+      }
+
+      if (item.filters.length <= 0) {
+        document.getElementById(filterName).remove();
+      } else {
+        document.getElementById(`selected-${filterValue}`).remove();
+      }
     }
   });
 
@@ -83,7 +86,7 @@ function createElement() {
   selectedFilters.forEach((item) => {
     let filterGroup = document.getElementById(item.name);
 
-    if (!filterGroup) {
+    if (!filterGroup && item.filters.length > 0) {
       filterGroup = document.createElement("div");
       filterGroup.id = item.name;
       filterGroup.append(item.name);
