@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Filter</title>
+    <link rel="stylesheet" href="app.css">
+</head>
+
+<body>
+    <div class="container">
+        <div id="column1">
+            <button type="button" class="parent-filter" id="platform">Platform</button>
+            <button type="button" class="parent-filter" id="stream" disabled>Stream</button>
+            <button type="button" class="parent-filter" id="audience-name" disabled>Audience name</button>
+            <button type="button" class="parent-filter" id="user-property">User property</button>
+        </div>
+        <div id="column2">
+            <div class="header">Select filter</div>
+            <div class="filters" id="platform-filters" data-name="Platforms">
+                <label>
+                    <input type="checkbox" name="platform" value="android" />
+                    Android
+                </label>
+                <label>
+                    <input type="checkbox" name="platform" value="ios" />
+                    iOS
+                </label>
+            </div>
+            <div class="filters" id="user-property-filters" data-name="User property">
+                <div>
+                    App Version
+                    <label>
+                        <input type="checkbox" name="app-version" value="3.2.3" />
+                        3.2.3
+                    </label>
+                    <label>
+                        <input type="checkbox" name="app-version" value="3.2.4" />
+                        3.2.4
+                    </label>
+                </div>
+                <div>
+                    Gender
+                    <label>
+                        <input type="checkbox" name="gender" value="female" />
+                        Female
+                    </label>
+                    <label>
+                        <input type="checkbox" name="gender" value="male" />
+                        Male
+                    </label>
+                </div>
+            </div>
+        </div>
+        <div id="column3" class="selected-filters">
+            <div class="header">No filters selected</div>
+        </div>
+    </div>
+</body>
+
+<script src="app.js"></script>
+
+</html>
